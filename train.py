@@ -136,21 +136,8 @@ class Trainer:
         # transition is a list of 4-tuples, instead we want 4 vectors (as torch.Tensor's)
         state, action, reward, next_state, done = zip(*transitions)
 
-        # convert to PyTorch and define types
-        state = torch.tensor(state, dtype=torch.float)
-        action = torch.tensor(action, dtype=torch.int64)  # Need 64 bit to use them as index
-        next_state = torch.tensor(next_state, dtype=torch.float)
-        reward = torch.tensor(reward, dtype=torch.float)
-        done = torch.tensor(done, dtype=torch.uint8)  # Boolean
-
-        # compute the q value
-        q_val = self._compute_q_val(self.agent, state, action)
-
-        with torch.no_grad():  # Don't compute gradient info for the target (semi-gradient)
-            target = self._compute_target(self.agent, reward, next_state, done, self.arguments.discount_factor)
-
         # loss is measured from error between current and newly expected Q values
-        loss = self.loss(q_val, target)
+        loss = self._compute_loss(state, action, reward, next_state, done)
 
         # backpropagation of loss to Neural Network (PyTorch magic)
         self.optimizer.zero_grad()
@@ -185,7 +172,9 @@ class Trainer:
         while True:
             action = self._select_action(self.agent, s, self._get_epsilon(self._global_steps))
             s_next, r, done, _ = self.environment.step(action)
-            self.memory.push((s, action, r, s_next, done))
+
+            error = self._compute_loss([s], [action], [r], [s_next], done)
+            self.memory.push(error.item(), (s, action, r, s_next, done))
 
             step += 1
             self._global_steps += 1
@@ -209,6 +198,24 @@ class Trainer:
     def _log(self, episode, episode_durations, losses):
 
         print(f"Episode {episode} duration: {episode_durations}, losses: {losses}")
+
+    def _compute_loss(self, state, action, reward, next_state, done):
+        # convert to PyTorch and define types
+        state = torch.tensor(state, dtype=torch.float)
+        action = torch.tensor(action, dtype=torch.int64)  # Need 64 bit to use them as index
+        next_state = torch.tensor(next_state, dtype=torch.float)
+        reward = torch.tensor(reward, dtype=torch.float)
+        done = torch.tensor(done, dtype=torch.uint8)  # Boolean
+
+        # compute the q value
+        q_val = self._compute_q_val(self.agent, state, action)
+
+        with torch.no_grad():  # Don't compute gradient info for the target (semi-gradient)
+            target = self._compute_target(self.agent, reward, next_state, done, self.arguments.discount_factor)
+
+        # loss is measured from error between current and newly expected Q values
+        loss = self.loss(q_val, target)
+        return loss
 
 
 

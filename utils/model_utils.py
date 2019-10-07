@@ -5,6 +5,8 @@ from typing import List
 import torch.nn as nn
 import torch.optim as opt
 
+import gym
+
 from utils.constants import *
 
 types = [REPLAY_DIR, ENV_DIR, LOSS_DIR, AG_DIR]
@@ -25,16 +27,28 @@ def _read_all_class_names():
                 class_reference = getattr(module, short_name)
                 models[typ][short_name] = class_reference
 
+    models[ENV_DIR]["CartPole-v0"] = gym.envs.make
+
+
+
     models[OPTIMS] = {}
     models[OPTIMS]["ADAM"] = opt.Adam
     models[OPTIMS]["RMSprop"] = opt.RMSprop
     models[OPTIMS]["SGD"] = opt.SGD
+
+# env = ("CartPole-v0")
 
 
 def find_right_model(type: str, name: str, **kwargs):
     """
     returns model with arguments given a string name-tag
     """
+
+    if (type==ENV_DIR):
+        try:
+            return models[type][name](name)
+        except:
+            pass
 
     return models[type][name](**kwargs)
 

@@ -25,7 +25,7 @@ def main(arguments: argparse.Namespace):
 
     replay_memory = find_right_model(REPLAY_DIR, arguments.replay, device=device, example_param="example_value")
     agent = find_right_model(AG_DIR, arguments.agent_model, device=device, example_param="example_value")
-    environment = None #find_right_model(ENV_DIR, arguments.environment, device=device, example_param="example_value") todo: fix
+    environment = find_right_model(ENV_DIR, arguments.environment, device=device, example_param="example_value") #todo: fix
 
     if arguments.test_mode:
 
@@ -59,11 +59,11 @@ def parse() -> argparse.Namespace:
     parser.add_argument('--learning_rate', default=1e-3, type=float, help='learning rate')
 
     # string
-    parser.add_argument('--environment', default="default", type=str, help='classifier model name')
-    parser.add_argument('--replay', default="ParentReplay", type=str, help='generator model name')
+    parser.add_argument('--environment', default="CartPole-v0", type=str, help='classifier model name')
+    parser.add_argument('--replay', default="RandomReplay", type=str, help='generator model name')
     parser.add_argument('--loss', default="ParentLoss", type=str, help='loss-function model name')
     parser.add_argument('--optimizer', default="ADAM", type=str, help='loss-function model name')
-    parser.add_argument('--agent_model', default="ParentAgent", type=str, help='loss-function model name')
+    parser.add_argument('--agent_model', default="QNetworkAgent", type=str, help='loss-function model name')
 
     parser.add_argument('--run_name', default="", type=str, help='extra identification for run')
 

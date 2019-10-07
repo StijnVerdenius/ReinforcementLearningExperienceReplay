@@ -61,7 +61,7 @@ def parse() -> argparse.Namespace:
     # string
     parser.add_argument('--environment', default="CartPole-v0", type=str, help='classifier model name')
     parser.add_argument('--replay', default="RandomReplay", type=str, help='generator model name')
-    parser.add_argument('--loss', default="ParentLoss", type=str, help='loss-function model name')
+    parser.add_argument('--loss', default="SmoothF1Loss", type=str, help='loss-function model name')
     parser.add_argument('--optimizer', default="ADAM", type=str, help='loss-function model name')
     parser.add_argument('--agent_model', default="QNetworkAgent", type=str, help='loss-function model name')
 
@@ -85,7 +85,7 @@ def parse() -> argparse.Namespace:
 if __name__ == '__main__':
     print("PyTorch version:", torch.__version__, "Python version:", sys.version)
     print("Working directory: ", os.getcwd())
-    # print("CUDA avalability:", torch.cuda.is_available(), "CUDA version:", torch.version.cuda)
+    print("CUDA avalability:", torch.cuda.is_available(), "CUDA version:", torch.version.cuda)
     ensure_current_directory()
     args = parse()
     print(args)

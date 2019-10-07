@@ -11,7 +11,7 @@ MODELS_DIR = "models"
 PROGRESS_DIR = "progress"
 DATA_DIR = "data"
 
-PROJ_NAME = "DL4NLP"
+PROJ_NAME = "RL_reproducibilty"
 GITIGNORED_DIR = "gitignored"
 
 DATA_MANAGER = DataManager(os.path.join(".", GITIGNORED_DIR))

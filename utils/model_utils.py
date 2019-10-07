@@ -7,7 +7,7 @@ import torch.optim as opt
 
 from utils.constants import *
 
-types = [REPLAY_DIR, ENV_DIR, LOSS_DIR, DATASETS]
+types = [REPLAY_DIR, ENV_DIR, LOSS_DIR, AG_DIR]
 models = {x: {} for x in types}
 
 

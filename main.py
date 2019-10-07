@@ -23,9 +23,9 @@ def main(arguments: argparse.Namespace):
         torch.backends.cudnn.benchmark = False
         torch.cuda.manual_seed_all(args.seed)
 
-    environment = find_right_model(ENV_DIR, arguments.environment, example_param="example_value")
-    replay_memory = find_right_model(REPLAY_DIR, arguments.environment, example_param="example_value")
-    agent = find_right_model(AG_DIR, arguments.agent_model, example_param="example_value")
+    replay_memory = find_right_model(REPLAY_DIR, arguments.replay, device=device, example_param="example_value")
+    agent = find_right_model(AG_DIR, arguments.agent_model, device=device, example_param="example_value")
+    environment = find_right_model(ENV_DIR, arguments.environment, device=device, example_param="example_value")
 
     if arguments.test_mode:
 
@@ -33,7 +33,7 @@ def main(arguments: argparse.Namespace):
 
     else:
 
-        loss = find_right_model(LOSS_DIR, arguments.loss, )
+        loss = find_right_model(LOSS_DIR, arguments.loss, device=device)
 
         optimizer = find_right_model(OPTIMS, arguments.optimizer,  params=agent.parameters(), lr=arguments.learning_rate)
 
@@ -60,10 +60,10 @@ def parse() -> argparse.Namespace:
 
     # string
     parser.add_argument('--environment', default="default", type=str, help='classifier model name')
-    parser.add_argument('--replay', default="default", type=str, help='generator model name')
-    parser.add_argument('--loss', default="default", type=str, help='loss-function model name')
+    parser.add_argument('--replay', default="ParentReplay", type=str, help='generator model name')
+    parser.add_argument('--loss', default="ParentLoss", type=str, help='loss-function model name')
     parser.add_argument('--optimizer', default="ADAM", type=str, help='loss-function model name')
-    parser.add_argument('--agent_model', default="default", type=str, help='loss-function model name')
+    parser.add_argument('--agent_model', default="ParentAgent", type=str, help='loss-function model name')
 
     parser.add_argument('--run_name', default="", type=str, help='extra identification for run')
 

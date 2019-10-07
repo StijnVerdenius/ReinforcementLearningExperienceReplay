@@ -1,1 +1,1 @@
-TODO: depends on the environment by openAI, stijn will look at it
+TODO: models/environments depends on the environment by openAI, stijn will look at it

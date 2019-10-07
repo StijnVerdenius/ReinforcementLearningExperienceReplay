@@ -5,7 +5,7 @@ from models.replays.ParentReplay import ParentReplay
 
 class RandomReplay(ParentReplay):
 
-    def __init__(self, capacity: int = 0, **kwargs):
+    def __init__(self, capacity: int = 10000, **kwargs):
         super(RandomReplay, self).__init__(**kwargs)
         self.capacity = capacity
         self.memory = []

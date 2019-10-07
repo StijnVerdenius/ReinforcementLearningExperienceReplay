@@ -173,8 +173,7 @@ class Trainer:
             action = self._select_action(self.agent, s, self._get_epsilon(self._global_steps))
             s_next, r, done, _ = self.environment.step(action)
 
-            error = self._compute_loss([s], [action], [r], [s_next], done)
-            self.memory.push(error.item(), (s, action, r, s_next, done))
+            self.memory.push((s, action, r, s_next, done))
 
             step += 1
             self._global_steps += 1

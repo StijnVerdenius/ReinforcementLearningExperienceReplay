@@ -25,7 +25,7 @@ def main(arguments: argparse.Namespace):
 
     replay_memory = find_right_model(REPLAY_DIR, arguments.replay, device=device, example_param="example_value")
     agent = find_right_model(AG_DIR, arguments.agent_model, device=device, example_param="example_value")
-    environment = find_right_model(ENV_DIR, arguments.environment, device=device, example_param="example_value")
+    environment = None #find_right_model(ENV_DIR, arguments.environment, device=device, example_param="example_value") todo: fix
 
     if arguments.test_mode:
 
@@ -37,7 +37,7 @@ def main(arguments: argparse.Namespace):
 
         optimizer = find_right_model(OPTIMS, arguments.optimizer,  params=agent.parameters(), lr=arguments.learning_rate)
 
-        Trainer(environment, replay_memory, loss, agent, optimizer, arguments).train()
+        Trainer(environment, replay_memory, loss, agent, optimizer, device, arguments.patience, arguments).train()
 
 
 def parse() -> argparse.Namespace:

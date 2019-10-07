@@ -26,7 +26,7 @@ def _read_all_class_names():
                 models[typ][short_name] = class_reference
 
     models[OPTIMS] = {}
-    models[OPTIMS]["Adam"] = opt.Adam
+    models[OPTIMS]["ADAM"] = opt.Adam
     models[OPTIMS]["RMSprop"] = opt.RMSprop
     models[OPTIMS]["SGD"] = opt.SGD
 

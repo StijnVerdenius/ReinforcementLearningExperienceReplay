@@ -1,0 +1,9 @@
+Subject: experience replay:
+  - Goal: 1. Compare the performance of difference types of experience replay within multiple environments:
+         - Start with these types: prioritised experience replay and hindsight experience replay.(HER=https://arxiv.org/pdf/1707.01495.pdf)
+         - Start with these environments: balancing a pole for now, put it within stijn's framework, start putting new environments into it.
+         Why is this interesting? 
+         - Experience replay is commonly used to avoid 'forgetting' old experiences and prioritizing only the new ones. Essentially, experiences
+           are combined into one big bucket and shuffled up when training. A buffer of past experiences is used to stabilize training by 
+           decorrelating the training examples in each batch used to update the neural network
+          

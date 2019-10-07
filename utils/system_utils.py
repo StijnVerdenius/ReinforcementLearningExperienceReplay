@@ -1,3 +1,5 @@
+import inspect
+
 from utils.constants import *
 
 
@@ -45,3 +47,14 @@ def save_codebase_of_run(arguments):
     for file_name in list(os.listdir(base)):
         if ("arguments.txt" in file_name): continue
         os.rename(base + "/" + file_name, base + "/" + file_name + ".py")
+
+def autodict(*args):
+    get_rid_of = ['autodict(', ',', ')', '\n']
+    calling_code = inspect.getouterframes(inspect.currentframe())[1][4][0]
+    calling_code = calling_code[calling_code.index('autodict'):]
+    for garbage in get_rid_of:
+        calling_code = calling_code.replace(garbage, '')
+    var_names, var_values = calling_code.split(), args
+    dyn_dict = {var_name: var_value for var_name, var_value in
+                zip(var_names, var_values)}
+    return dyn_dict

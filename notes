@@ -9,3 +9,12 @@ Subject: experience replay:
            decorrelating the training examples in each batch used to update the neural network
          - Hindsight experience replay allows us to 'imagine' experiences and use those to train our model. It turns out that this is very helpful
            especially in situations where our tasks reward is very sparse, for example the mountair car game. 
+         - Priority experience replay allows us to prioritize certain experiences over others. This usefulness of this can be understood intuitively,
+           its easy to see that not every experience is equally important when a learning a certain task, and so weighing these importances will most
+           likely boost performance in some way.
+
+  - TODOS (7/10/19):
+    1. Implement HER -> Filip
+    2. Implement PER -> Tsiamas
+    3. Implement a new envrionment (a simple one, from openAI) -> Stijn
+    4. Revisit metrics for all envs for general training: e.g. maximum expected reward etc. -> Elias

@@ -17,7 +17,7 @@ from torch.utils.data import DataLoader
 from models import GeneralModel
 from utils.constants import *
 from utils.model_utils import save_models, calculate_accuracy
-from utils.system_utils import setup_directories, save_codebase_of_run
+from utils.system_utils import setup_directories, save_codebase_of_run, autodict
 
 
 class Trainer:
@@ -66,7 +66,7 @@ class Trainer:
         # data gathering
         progress = []
 
-        episodes = 0
+        episode = 0
 
         try:
 
@@ -76,19 +76,23 @@ class Trainer:
             best_metrics = (math.inf, 0)
             patience = self._patience
             # run
-            for episodes in range(self.arguments.episodes):
+            for episode in range(self.arguments.episodes):
 
                 # do epoch
                 episode_durations, losses = self._episode_iteration()
 
                 # add progress-list to global progress-list
-                progress += episode_durations
+                progress += [autodict(episode_durations, losses, episode)]
 
-                # write progress to pickle file (overwrite because there is no point keeping seperate versions)
-                DATA_MANAGER.save_python_obj(progress,
-                                             os.path.join(RESULTS_DIR, DATA_MANAGER.stamp, PROGRESS_DIR,
-                                                          "progress_list"),
-                                             print_success=False)
+                if (episode % self.arguments.eval_freq) == 0:
+                    # write progress to pickle file (overwrite because there is no point keeping seperate versions)
+                    DATA_MANAGER.save_python_obj(progress,
+                                                 os.path.join(RESULTS_DIR, DATA_MANAGER.stamp, PROGRESS_DIR,
+                                                              "progress_list"),
+                                                 print_success=False)
+
+                    self._log(episode,episode_durations, losses)
+
 
                 # flush prints
                 sys.stdout.flush()
@@ -98,11 +102,11 @@ class Trainer:
 
         except KeyboardInterrupt as e:
             print(f"Killed by user: {e}")
-            save_models([self.agent], f"KILLED_at_epoch_{episodes}")
-            return False
+            save_models([self.agent], f"KILLED_at_epoch_{episode}")
+            # return False
         except Exception as e:
             print(e)
-            save_models([self.agent], f"CRASH_at_epoch_{episodes}")
+            save_models([self.agent], f"CRASH_at_epoch_{episode}")
             raise e
 
         # flush prints
@@ -110,6 +114,12 @@ class Trainer:
 
         # example last save
         save_models([self.agent], "finished")
+
+        check = DATA_MANAGER.load_python_obj(os.path.join(RESULTS_DIR, DATA_MANAGER.stamp, PROGRESS_DIR,
+                                                              "progress_list"))
+
+        print(check)
+
         return True
 
     def _step_train(self, epoch = 0, best_metrics = [], patience = 0):
@@ -170,8 +180,6 @@ class Trainer:
 
     def _episode_iteration(self):
 
-        episode_durations = []
-        losses = []
         step = 0
         s = self.environment.reset()
         while True:
@@ -189,10 +197,8 @@ class Trainer:
             if done:
                 break
 
-        episode_durations.append(step)
-        losses.append(loss)
 
-        return episode_durations, losses
+        return step, loss
 
     def _get_epsilon(self,it):
         if it >= 1000:
@@ -200,6 +206,9 @@ class Trainer:
         else:
             return np.linspace(1,0.05,1000)[it]
 
+    def _log(self, episode, episode_durations, losses):
+
+        print(f"Episode {episode} duration: {episode_durations}, losses: {losses}")
 
 
 

@@ -8,6 +8,8 @@ from utils.system_utils import ensure_current_directory
 import numpy as np
 import random
 
+
+
 def main(arguments: argparse.Namespace):
 
     device = args.device
@@ -57,7 +59,7 @@ def parse() -> argparse.Namespace:
 
     # float
     parser.add_argument('--learning_rate', default=1e-3, type=float, help='learning rate')
-    parser.add_argument('--discount_factor', default=1, type=float, help='discount factor')
+    parser.add_argument('--discount_factor', default=0.8, type=float, help='discount factor')
 
     # string
     parser.add_argument('--environment', default="CartPole-v0", type=str, help='classifier model name')

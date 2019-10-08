@@ -16,5 +16,8 @@ Subject: experience replay:
   - TODOS (7/10/19):
     1. Implement HER -> Filip
     2. Implement PER -> Tsiamas
-    3. Implement a new envrionment (a simple one, from openAI) -> Stijn
+    3. Implement a new envrionment (a simple one, from openAI) -> Stijn -> DONE
     4. Revisit metrics for all envs for general training: e.g. maximum expected reward etc. -> Elias
+
+
+

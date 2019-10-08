@@ -26,8 +26,8 @@ def main(arguments: argparse.Namespace):
         torch.cuda.manual_seed_all(args.seed)
 
     replay_memory = find_right_model(REPLAY_DIR, arguments.replay, capacity=arguments.replay_capacity, device=device, example_param="example_value")
-    agent = find_right_model(AG_DIR, arguments.agent_model, device=device, example_param="example_value")
-    environment = find_right_model(ENV_DIR, arguments.environment, device=device, example_param="example_value") #todo: fix
+    environment = find_right_model(ENV_DIR, arguments.environment, device=device, example_param="example_value")
+    agent = find_right_model(AG_DIR, arguments.agent_model, device=device, num_hidden=arguments.hidden_dim, actions=environment.action_space.n, state_size=environment.observation_space.shape)
 
     if arguments.test_mode:
 

@@ -2,10 +2,9 @@ import importlib
 import inspect
 from typing import List
 
+import gym
 import torch.nn as nn
 import torch.optim as opt
-
-import gym
 
 from utils.constants import *
 
@@ -27,16 +26,14 @@ def _read_all_class_names():
                 class_reference = getattr(module, short_name)
                 models[typ][short_name] = class_reference
 
+    # new openai premade envs go here and all point to the same function:
     models[ENV_DIR]["CartPole-v0"] = gym.envs.make
-
-
+    models[ENV_DIR]["example"] = gym.envs.make
 
     models[OPTIMS] = {}
     models[OPTIMS]["ADAM"] = opt.Adam
     models[OPTIMS]["RMSprop"] = opt.RMSprop
     models[OPTIMS]["SGD"] = opt.SGD
-
-# env = ("CartPole-v0")
 
 
 def find_right_model(type: str, name: str, **kwargs):
@@ -44,7 +41,7 @@ def find_right_model(type: str, name: str, **kwargs):
     returns model with arguments given a string name-tag
     """
 
-    if (type==ENV_DIR):
+    if (type == ENV_DIR):
         try:
             return models[type][name](name)
         except:
@@ -71,7 +68,8 @@ def save_models(models: List[nn.Module],
 
     save_dict = {str(model.__class__): model.state_dict() for model in models}
 
-    DATA_MANAGER.save_python_obj(save_dict, os.path.join(RESULTS_DIR, DATA_MANAGER.stamp, MODELS_DIR, suffix), print_success=False)
+    DATA_MANAGER.save_python_obj(save_dict, os.path.join(RESULTS_DIR, DATA_MANAGER.stamp, MODELS_DIR, suffix),
+                                 print_success=False)
 
 
 def calculate_accuracy(targets, output, *ignored):

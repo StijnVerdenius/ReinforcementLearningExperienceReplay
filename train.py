@@ -1,22 +1,17 @@
-from models.agents import ParentAgent
-from models.losses import ParentLoss
-from models.replays import ParentReplay
-
 import argparse
+import math
 import sys
 import time
-import math
-from datetime import datetime
-from typing import List, Tuple
 
 import numpy as np
 from tensorboardX import SummaryWriter
 from torch.optim.optimizer import Optimizer
-from torch.utils.data import DataLoader
 
-from models import GeneralModel
+from models.agents import ParentAgent
+from models.losses import ParentLoss
+from models.replays import ParentReplay
 from utils.constants import *
-from utils.model_utils import save_models, calculate_accuracy
+from utils.model_utils import save_models
 from utils.system_utils import setup_directories, save_codebase_of_run, autodict
 
 
@@ -29,7 +24,7 @@ class Trainer:
                  agent: ParentAgent,
                  optimizer: Optimizer,
                  device,
-                 patience: int, # todo: typing
+                 patience: int,  # todo: typing
                  arguments: argparse.Namespace):
 
         self.arguments = arguments
@@ -91,19 +86,17 @@ class Trainer:
                                                               "progress_list"),
                                                  print_success=False)
 
-                    self._log(episode,episode_durations, losses)
-
+                    self._log(episode, episode_durations, losses)
 
                 # flush prints
                 sys.stdout.flush()
 
-                if patience == 0:
+                if patience == 0: # todo: implement patience and maximum elapsed time
                     break
 
         except KeyboardInterrupt as e:
             print(f"Killed by user: {e}")
             save_models([self.agent], f"KILLED_at_epoch_{episode}")
-            # return False
         except Exception as e:
             print(e)
             save_models([self.agent], f"CRASH_at_epoch_{episode}")
@@ -115,16 +108,13 @@ class Trainer:
         # example last save
         save_models([self.agent], "finished")
 
-        check = DATA_MANAGER.load_python_obj(os.path.join(RESULTS_DIR, DATA_MANAGER.stamp, PROGRESS_DIR,
-                                                              "progress_list"))
+        return DATA_MANAGER.load_python_obj(os.path.join(RESULTS_DIR, DATA_MANAGER.stamp, PROGRESS_DIR,
+                                                          "progress_list"))
 
-        print(check)
 
-        return True
+    def _step_train(self, epoch=0, best_metrics=[], patience=0):
 
-    def _step_train(self, epoch = 0, best_metrics = [], patience = 0):
-
-        # todo: use parameters
+        # todo: use parameters: elias
 
         # don't learn without some decent experience
         if len(self.memory) < self.arguments.batch_size:
@@ -144,25 +134,23 @@ class Trainer:
         loss.backward()
         self.optimizer.step()
 
-        return loss.item()  # Returns a Python scalar, and releases history (similar to .detach())
+        return loss.item()
 
-        return epoch_progress, best_metrics, patience
+    def _compute_q_val(self, state, action):
+        return self.agent.forward(state)[torch.arange(len(action)), action]
 
-    def _compute_q_val(self,model, state, action):
-        return model(state)[torch.arange(len(action)), action]
-
-    def _compute_target(self, model, reward, next_state, done, discount_factor):
+    def _compute_target(self, reward, next_state, done):
         # done is a boolean (vector) that indicates if next_state is terminal (episode is done)
-        best_action = self._select_action(model, next_state, 0)
-        return torch.mul(reward + discount_factor * self._compute_q_val(model, next_state, best_action), 1 - done.float())
+        best_action = self._select_action(next_state, 0)
+        return torch.mul(reward + self.arguments.discount_factor * self._compute_q_val(next_state, best_action),
+                         1 - done.float())
 
-    def _select_action(self, model, state, epsilon):
+    def _select_action(self, state, epsilon):
         if np.random.random() < epsilon:
             return np.random.choice(range(2))
         else:
             with torch.no_grad():
-                q_est = model(torch.Tensor(state))
-                index = torch.argmax(model(torch.Tensor(state)), -1)
+                index = torch.argmax(self.agent.forward(torch.Tensor(state)), -1)
                 return index.tolist()
 
     def _episode_iteration(self):
@@ -170,7 +158,7 @@ class Trainer:
         step = 0
         s = self.environment.reset()
         while True:
-            action = self._select_action(self.agent, s, self._get_epsilon(self._global_steps))
+            action = self._select_action(s, self._get_epsilon())
             s_next, r, done, _ = self.environment.step(action)
 
             self.memory.push((s, action, r, s_next, done))
@@ -185,20 +173,22 @@ class Trainer:
             if done:
                 break
 
-
         return step, loss
 
-    def _get_epsilon(self,it):
-        if it >= 1000:
+    def _get_epsilon(self):
+        if self._global_steps >= 1000:
             return 0.05
         else:
-            return np.linspace(1,0.05,1000)[it]
+            return np.linspace(1, 0.05, 1000)[self._global_steps]
 
     def _log(self, episode, episode_durations, losses):
+
+        # todo: elias
 
         print(f"Episode {episode} duration: {episode_durations}, losses: {losses}")
 
     def _compute_loss(self, state, action, reward, next_state, done):
+
         # convert to PyTorch and define types
         state = torch.tensor(state, dtype=torch.float)
         action = torch.tensor(action, dtype=torch.int64)  # Need 64 bit to use them as index
@@ -207,15 +197,11 @@ class Trainer:
         done = torch.tensor(done, dtype=torch.uint8)  # Boolean
 
         # compute the q value
-        q_val = self._compute_q_val(self.agent, state, action)
+        q_val = self._compute_q_val(state, action)
 
         with torch.no_grad():  # Don't compute gradient info for the target (semi-gradient)
-            target = self._compute_target(self.agent, reward, next_state, done, self.arguments.discount_factor)
+            target = self._compute_target(reward, next_state, done)
 
         # loss is measured from error between current and newly expected Q values
         loss = self.loss(q_val, target)
         return loss
-
-
-
-

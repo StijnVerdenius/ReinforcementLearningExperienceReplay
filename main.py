@@ -1,17 +1,16 @@
 import argparse
+import random
 import sys
+
+import numpy as np
 
 from train import Trainer
 from utils.constants import *
 from utils.model_utils import find_right_model
 from utils.system_utils import ensure_current_directory
-import numpy as np
-import random
-
 
 
 def main(arguments: argparse.Namespace):
-
     device = arguments.device
     if arguments.device is None:
         device = "cuda" if torch.cuda.is_available() else "cpu"
@@ -25,9 +24,11 @@ def main(arguments: argparse.Namespace):
         torch.backends.cudnn.benchmark = False
         torch.cuda.manual_seed_all(arguments.seed)
 
-    replay_memory = find_right_model(REPLAY_DIR, arguments.replay, capacity=arguments.replay_capacity, device=device, example_param="example_value")
+    replay_memory = find_right_model(REPLAY_DIR, arguments.replay, capacity=arguments.replay_capacity, device=device,
+                                     example_param="example_value")
     environment = find_right_model(ENV_DIR, arguments.environment, device=device, example_param="example_value")
-    agent = find_right_model(AG_DIR, arguments.agent_model, device=device, num_hidden=arguments.hidden_dim, actions=environment.action_space.n, state_size=environment.observation_space.shape)
+    agent = find_right_model(AG_DIR, arguments.agent_model, device=device, num_hidden=arguments.hidden_dim,
+                             actions=environment.action_space.n, state_size=environment.observation_space.shape)
 
     if arguments.test_mode:
 
@@ -37,7 +38,7 @@ def main(arguments: argparse.Namespace):
 
         loss = find_right_model(LOSS_DIR, arguments.loss, device=device)
 
-        optimizer = find_right_model(OPTIMS, arguments.optimizer,  params=agent.parameters(), lr=arguments.learning_rate)
+        optimizer = find_right_model(OPTIMS, arguments.optimizer, params=agent.parameters(), lr=arguments.learning_rate)
 
         Trainer(environment, replay_memory, loss, agent, optimizer, device, arguments.patience, arguments).train()
 

@@ -28,7 +28,7 @@ def main(arguments: argparse.Namespace):
                                      example_param="example_value")
     environment = find_right_model(ENV_DIR, arguments.environment, device=device, example_param="example_value")
     agent = find_right_model(AG_DIR, arguments.agent_model, device=device, num_hidden=arguments.hidden_dim,
-                             actions=environment.action_space.n, state_size=environment.observation_space.shape)
+                             actions=environment.action_space, state_size=environment.observation_space)
 
     if arguments.test_mode:
 
@@ -65,7 +65,9 @@ def parse() -> argparse.Namespace:
     parser.add_argument('--replay_capacity', default=10000, type=int, help='max capcity of replay buffer')
 
     # string
+    # parser.add_argument('--environment', default="BipedalWalker-v2", type=str, help='classifier model name')
     parser.add_argument('--environment', default="CartPole-v0", type=str, help='classifier model name')
+
     parser.add_argument('--replay', default="RandomReplay", type=str, help='generator model name')
     parser.add_argument('--loss', default="SmoothF1Loss", type=str, help='loss-function model name')
     parser.add_argument('--optimizer', default="ADAM", type=str, help='loss-function model name')

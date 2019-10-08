@@ -14,7 +14,6 @@ from utils.constants import *
 from utils.model_utils import save_models
 from utils.system_utils import setup_directories, save_codebase_of_run, autodict, report_error
 
-import traceback
 
 class Trainer:
 
@@ -92,7 +91,7 @@ class Trainer:
                 # flush prints
                 sys.stdout.flush()
 
-                if patience == 0: # todo: implement patience and maximum elapsed time
+                if patience == 0:  # todo: implement patience and maximum elapsed time
                     break
 
         except KeyboardInterrupt as e:
@@ -108,7 +107,7 @@ class Trainer:
         save_models([self.agent], "finished")
 
         return DATA_MANAGER.load_python_obj(os.path.join(RESULTS_DIR, DATA_MANAGER.stamp, PROGRESS_DIR,
-                                                          "progress_list"))
+                                                         "progress_list"))
 
     def _step_train(self, epoch=0, best_metrics=[], patience=0):
 
@@ -135,20 +134,31 @@ class Trainer:
         return loss.item()
 
     def _compute_q_val(self, state, action):
-        return self.agent.forward(state)[torch.arange(len(action)), action]
+        q = self.agent.forward(state)
+        if isinstance(self.agent.actions, tuple):
+            return q
+        return q[torch.arange(len(action)), action]
 
     def _compute_target(self, reward, next_state, done):
         # done is a boolean (vector) that indicates if next_state is terminal (episode is done)
         best_action = self._select_action(next_state, 0)
-        return torch.mul(reward + self.arguments.discount_factor * self._compute_q_val(next_state, best_action),
-                         1 - done.float())
+        if isinstance(self.agent.actions, tuple):
+            return torch.mul(
+                (self.arguments.discount_factor * self._compute_q_val(next_state, best_action)) + reward.unsqueeze(0).T,
+                (1 - done.float()).unsqueeze(0).T)
+        else:
+            return torch.mul(reward + self.arguments.discount_factor * self._compute_q_val(next_state, best_action),
+                             1 - done.float())
 
     def _select_action(self, state, epsilon):
-        if np.random.random() < epsilon:
-            return np.random.choice(range(2))
-        else:
-            with torch.no_grad():
-                index = torch.argmax(self.agent.forward(torch.Tensor(state)), -1)
+        with torch.no_grad():
+            q = self.agent.forward(torch.Tensor(state))
+            if isinstance(self.agent.actions, tuple):
+                return q.tolist()
+            else:
+                if np.random.random() < epsilon:
+                    return np.random.choice(range(self.agent.actions[0]))
+                index = torch.argmax(q, -1)
                 return index.tolist()
 
     def _episode_iteration(self):

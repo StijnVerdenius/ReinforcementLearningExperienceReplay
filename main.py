@@ -12,18 +12,18 @@ import random
 
 def main(arguments: argparse.Namespace):
 
-    device = args.device
-    if args.device == None:
+    device = arguments.device
+    if arguments.device is None:
         device = "cuda" if torch.cuda.is_available() else "cpu"
 
     # for reproducibility
-    torch.manual_seed(args.seed)
-    np.random.seed(args.seed)
-    random.seed(args.seed)
+    torch.manual_seed(arguments.seed)
+    np.random.seed(arguments.seed)
+    random.seed(arguments.seed)
 
     if device == 'cuda':
         torch.backends.cudnn.benchmark = False
-        torch.cuda.manual_seed_all(args.seed)
+        torch.cuda.manual_seed_all(arguments.seed)
 
     replay_memory = find_right_model(REPLAY_DIR, arguments.replay, capacity=arguments.replay_capacity, device=device, example_param="example_value")
     environment = find_right_model(ENV_DIR, arguments.environment, device=device, example_param="example_value")
@@ -91,6 +91,6 @@ if __name__ == '__main__':
     print("Working directory: ", os.getcwd())
     print("CUDA avalability:", torch.cuda.is_available(), "CUDA version:", torch.version.cuda)
     ensure_current_directory()
-    args = parse()
-    print(args)
-    main(args)
+    arguments = parse()
+    print(arguments)
+    main(arguments)

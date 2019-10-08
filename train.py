@@ -187,7 +187,8 @@ class Trainer:
 
             summed_reward += r
 
-            self.memory.push((s, action, r, s_next, done))
+            error = self._compute_loss([s], [action], [r], [s_next], [done]).item()
+            self.memory.push(error, (s, action, r, s_next, done))
 
             step += 1
             self._global_steps += 1

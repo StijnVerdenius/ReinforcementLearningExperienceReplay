@@ -57,7 +57,7 @@ class PriorityReplay(ParentReplay):  # stored as ( s, a, r, s_ ) in SumTree
         is_weight = np.power(self.tree.n_entries * sampling_probabilities, -self.beta)
         is_weight /= is_weight.max()
 
-        return batch, idxs, is_weight
+        return batch
 
     def update(self, idx, error):
         p = self._get_priority(error)

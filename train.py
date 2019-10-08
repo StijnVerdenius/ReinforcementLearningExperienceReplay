@@ -77,16 +77,18 @@ class Trainer:
                 episode_durations, losses = self._episode_iteration()
 
                 # add progress-list to global progress-list
-                progress += [autodict(episode_durations, losses, episode)]
 
                 if (episode % self.arguments.eval_freq) == 0:
+
+                    progress += [{**autodict(episode_durations, losses, episode), **self._collect_metrics(None)}]
+
                     # write progress to pickle file (overwrite because there is no point keeping seperate versions)
                     DATA_MANAGER.save_python_obj(progress,
                                                  os.path.join(RESULTS_DIR, DATA_MANAGER.stamp, PROGRESS_DIR,
                                                               "progress_list"),
                                                  print_success=False)
 
-                    self._log(episode, episode_durations, losses)
+                    self._log(episode, progress[-1])
 
                 # flush prints
                 sys.stdout.flush()
@@ -132,6 +134,9 @@ class Trainer:
         self.optimizer.step()
 
         return loss.item()
+
+    def _collect_metrics(self, *stuff ):
+        return {"dummy_metric" : stuff} # todo elias
 
     def _compute_q_val(self, state, action):
         q = self.agent.forward(state)
@@ -189,11 +194,16 @@ class Trainer:
         else:
             return np.linspace(1, 0.05, 1000)[self._global_steps]
 
-    def _log(self, episode, episode_durations, losses):
+    def _log(self, episode, progress_item):
 
         # todo: elias
+        log_string = ""
 
-        print(f"Episode {episode} duration: {episode_durations}, losses: {losses}")
+        for key, value in progress_item.items():
+            if isinstance(value, (float, int)):
+                log_string += f",\t {key}: {value:>7.6f}"
+
+        print(f"Episode {episode}{log_string}")
 
     def _compute_loss(self, state, action, reward, next_state, done):
 

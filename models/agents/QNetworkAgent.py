@@ -1,5 +1,6 @@
-from models.agents.ParentAgent import ParentAgent
 import torch.nn as nn
+
+from models.agents.ParentAgent import ParentAgent
 
 
 class QNetworkAgent(ParentAgent):

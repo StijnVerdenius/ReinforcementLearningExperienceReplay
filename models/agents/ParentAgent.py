@@ -9,13 +9,19 @@ class ParentAgent(GeneralModel):
 
     def __init__(self, device, num_hidden, actions, state_size, **kwargs):
         super(ParentAgent, self).__init__(device, **kwargs)
-        self.state_size = self._unpack_size(state_size)
-        self.actions = self._unpack_size(actions)
+        self.state_size = self._unpack_state(state_size)
+        self.actions = self._unpack_actions(actions)
         self.num_hidden = num_hidden
 
-    def _unpack_size(self, element):
+    def _unpack_actions(self, element):
         try:
             return [element.n]
+        except:
+            return element.shape
+
+    def _unpack_state(self, element):
+        try:
+            return [len([element.n])]
         except:
             return element.shape
 

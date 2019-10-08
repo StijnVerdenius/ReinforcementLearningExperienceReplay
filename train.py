@@ -66,7 +66,7 @@ class Trainer:
         try:
 
             print(f"{PRINTCOLOR_BOLD}Started training with the following config:{PRINTCOLOR_END}\n{self.arguments}\n\n")
-            print(self._log_header)
+            # print(self._log_header)
 
             best_metrics = (math.inf, 0)
             patience = self._patience
@@ -79,7 +79,6 @@ class Trainer:
                 # add progress-list to global progress-list
 
                 if (episode % self.arguments.eval_freq) == 0:
-
                     progress += [{**autodict(episode_durations, losses, episode), **self._collect_metrics(None)}]
 
                     # write progress to pickle file (overwrite because there is no point keeping seperate versions)
@@ -135,10 +134,11 @@ class Trainer:
 
         return loss.item()
 
-    def _collect_metrics(self, *stuff ):
-        return {"dummy_metric" : stuff} # todo elias
+    def _collect_metrics(self, *stuff):
+        return {"dummy_metric": stuff}  # todo elias
 
     def _compute_q_val(self, state, action):
+        state = self._restore_state(state)
         q = self.agent.forward(state)
         if isinstance(self.agent.actions, tuple):
             return q
@@ -155,9 +155,17 @@ class Trainer:
             return torch.mul(reward + self.arguments.discount_factor * self._compute_q_val(next_state, best_action),
                              1 - done.float())
 
+    def _restore_state(self, state):
+        if (isinstance(state, (int, float, np.int64))):
+            state = [state]
+        elif (len(state.shape) == 1 and isinstance(state, torch.Tensor)):
+            state = state.unsqueeze(0).T
+        return state
+
     def _select_action(self, state, epsilon):
         with torch.no_grad():
-            q = self.agent.forward(torch.Tensor(state))
+            state = self._restore_state(state)
+            q = self.agent.forward(torch.Tensor(state).float())
             if isinstance(self.agent.actions, tuple):
                 return q.tolist()
             else:

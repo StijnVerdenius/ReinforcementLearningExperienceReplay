@@ -67,6 +67,9 @@ def parse() -> argparse.Namespace:
     # string
     # parser.add_argument('--environment', default="BipedalWalker-v2", type=str, help='classifier model name')
     parser.add_argument('--environment', default="CartPole-v0", type=str, help='classifier model name')
+    # parser.add_argument('--environment', default="LunarLander-v2", type=str, help='classifier model name')
+    # parser.add_argument('--environment', default="MountainCar-v0", type=str, help='classifier model name')
+    # parser.add_argument('--environment', default="FrozenLake8x8-v0", type=str, help='classifier model name')
 
     parser.add_argument('--replay', default="RandomReplay", type=str, help='generator model name')
     parser.add_argument('--loss', default="SmoothF1Loss", type=str, help='loss-function model name')

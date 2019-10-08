@@ -25,7 +25,7 @@ class PriorityReplay(ParentReplay):  # stored as ( s, a, r, s_ ) in SumTree
     def _get_priority(self, error):
         return (np.abs(error) + abs(np.random.normal(0.01, 0.001)))
 
-    def push(self, error, sample):
+    def push(self, sample, error):
         p = self._get_priority(error)
         self.tree.add(p, sample)
 

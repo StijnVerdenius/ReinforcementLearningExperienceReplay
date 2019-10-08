@@ -9,7 +9,7 @@ from torch.optim.optimizer import Optimizer
 
 from models.agents import ParentAgent
 from models.losses import ParentLoss
-from models.replays import ParentReplay
+from models.replays import ParentReplay, PriorityReplay
 from utils.constants import *
 from utils.model_utils import save_models
 from utils.system_utils import setup_directories, save_codebase_of_run, autodict, report_error
@@ -187,8 +187,13 @@ class Trainer:
 
             summed_reward += r
 
-            error = self._compute_loss([s], [action], [r], [s_next], [done]).item()
-            self.memory.push(error, (s, action, r, s_next, done))
+            if type(self.memory) is PriorityReplay.PriorityReplay:
+                # Priority replay memory push
+                error = self._compute_loss([s], [action], [r], [s_next], [done]).item()
+                self.memory.push((s, action, r, s_next, done), error)
+            else:
+                # Default memory push
+                self.memory.push((s, action, r, s_next, done))
 
             step += 1
             self._global_steps += 1

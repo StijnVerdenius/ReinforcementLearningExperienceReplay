@@ -12,8 +12,9 @@ from models.losses import ParentLoss
 from models.replays import ParentReplay
 from utils.constants import *
 from utils.model_utils import save_models
-from utils.system_utils import setup_directories, save_codebase_of_run, autodict
+from utils.system_utils import setup_directories, save_codebase_of_run, autodict, report_error
 
+import traceback
 
 class Trainer:
 
@@ -98,9 +99,7 @@ class Trainer:
             print(f"Killed by user: {e}")
             save_models([self.agent], f"KILLED_at_epoch_{episode}")
         except Exception as e:
-            print(e)
-            save_models([self.agent], f"CRASH_at_epoch_{episode}")
-            raise e
+            report_error(e, self.agent, episode)
 
         # flush prints
         sys.stdout.flush()
@@ -110,7 +109,6 @@ class Trainer:
 
         return DATA_MANAGER.load_python_obj(os.path.join(RESULTS_DIR, DATA_MANAGER.stamp, PROGRESS_DIR,
                                                           "progress_list"))
-
 
     def _step_train(self, epoch=0, best_metrics=[], patience=0):
 

@@ -7,6 +7,7 @@ import torch.nn as nn
 import torch.optim as opt
 
 from utils.constants import *
+from utils.constants import GYMS
 
 types = [REPLAY_DIR, ENV_DIR, LOSS_DIR, AG_DIR]
 models = {x: {} for x in types}
@@ -27,8 +28,9 @@ def _read_all_class_names():
                 models[typ][short_name] = class_reference
 
     # new openai premade envs go here and all point to the same function:
-    models[ENV_DIR]["CartPole-v0"] = gym.envs.make
-    models[ENV_DIR]["example"] = gym.envs.make
+    for openaigym in GYMS:
+        models[ENV_DIR][openaigym] = gym.envs.make
+
 
     models[OPTIMS] = {}
     models[OPTIMS]["ADAM"] = opt.Adam

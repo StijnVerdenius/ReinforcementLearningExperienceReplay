@@ -1,6 +1,8 @@
 import inspect
+import traceback
 
 from utils.constants import *
+from utils.model_utils import save_models
 
 
 def ensure_current_directory():
@@ -19,6 +21,19 @@ def setup_directories():
     dirs = OUTPUT_DIRS
     for dir_to_be in dirs:
         DATA_MANAGER.create_dir(os.path.join(RESULTS_DIR, stamp, dir_to_be))
+
+
+def report_error(e, agent, episode):
+    print(e)
+    with open(os.path.join(DATA_MANAGER.directory, RESULTS_DIR, DATA_MANAGER.stamp, OUTPUT_DIR, "error_report.txt"),
+              "w") as f:
+        f.write(str(e))
+        f.write("\n")
+        summary = traceback.extract_tb(e.__traceback__)
+        for x in summary:
+            f.write(str(x.__repr__()))
+    save_models([agent], f"CRASH_at_epoch_{episode}")
+    raise e
 
 
 def save_codebase_of_run(arguments):
@@ -47,6 +62,7 @@ def save_codebase_of_run(arguments):
     for file_name in list(os.listdir(base)):
         if ("arguments.txt" in file_name): continue
         os.rename(base + "/" + file_name, base + "/" + file_name + ".py")
+
 
 def autodict(*args):
     get_rid_of = ['autodict(', ',', ')', '\n']

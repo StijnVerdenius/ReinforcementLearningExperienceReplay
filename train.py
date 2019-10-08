@@ -74,12 +74,12 @@ class Trainer:
             for episode in range(self.arguments.episodes):
 
                 # do epoch
-                episode_durations, losses = self._episode_iteration()
+                episode_durations, losses, reward = self._episode_iteration()
 
                 # add progress-list to global progress-list
 
                 if (episode % self.arguments.eval_freq) == 0:
-                    progress += [{**autodict(episode_durations, losses, episode), **self._collect_metrics(None)}]
+                    progress += [{**autodict(episode_durations, losses, episode, reward), **self._collect_metrics(None)}]
 
                     # write progress to pickle file (overwrite because there is no point keeping seperate versions)
                     DATA_MANAGER.save_python_obj(progress,
@@ -178,9 +178,14 @@ class Trainer:
 
         step = 0
         s = self.environment.reset()
+
+        summed_reward = 0
+
         while True:
             action = self._select_action(s, self._get_epsilon())
             s_next, r, done, _ = self.environment.step(action)
+
+            summed_reward += r
 
             self.memory.push((s, action, r, s_next, done))
 
@@ -194,7 +199,7 @@ class Trainer:
             if done:
                 break
 
-        return step, loss
+        return step, loss, summed_reward
 
     def _get_epsilon(self):
         if self._global_steps >= 1000:

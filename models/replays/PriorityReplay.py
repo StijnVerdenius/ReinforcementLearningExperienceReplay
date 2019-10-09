@@ -1,6 +1,6 @@
 import random
 import numpy as np
-from old_shit.models.replays.ParentReplay import ParentReplay
+from models.replays.ParentReplay import ParentReplay
 from utils.SumTree import SumTree
 
 '''

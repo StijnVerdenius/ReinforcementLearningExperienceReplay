@@ -2,7 +2,7 @@ from typing import Any
 
 from torch import Tensor
 
-from old_shit.models import GeneralModel
+from models.GeneralModel import GeneralModel
 
 
 class ParentAgent(GeneralModel):

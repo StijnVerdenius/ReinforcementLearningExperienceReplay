@@ -1,7 +1,7 @@
 import torch.nn.functional as F
 from torch import Tensor
 
-from old_shit.models import ParentLoss
+from models.losses.ParentLoss import ParentLoss
 
 
 class SmoothF1Loss(ParentLoss):

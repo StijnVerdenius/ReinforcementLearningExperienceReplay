@@ -55,7 +55,7 @@ def parse() -> argparse.Namespace:
 
 
     # int
-    parser.add_argument('--episodes', default=50, type=int, help='max number of episodes')
+    parser.add_argument('--episodes', default=200, type=int, help='max number of episodes')
     parser.add_argument('--eval_freq', default=10, type=int, help='evaluate every x batches')
     parser.add_argument('--saving_freq', default=1, type=int, help='save every x epochs')  # todo: implement
     parser.add_argument('--batch_size', default=64, type=int, help='size of batches')
@@ -76,7 +76,7 @@ def parse() -> argparse.Namespace:
     # parser.add_argument('--environment', default="MountainCar-v0", type=str, help='classifier model name')
     # parser.add_argument('--environment', default="FrozenLake8x8-v0", type=str, help='classifier model name')
 
-    parser.add_argument('--replay', default="RandomReplay", type=str, help='generator model name')
+    parser.add_argument('--replay', default="RandomTrajectoryReplay", type=str, help='generator model name')
     parser.add_argument('--loss', default="SmoothF1Loss", type=str, help='loss-function model name')
     parser.add_argument('--optimizer', default="ADAM", type=str, help='loss-function model name')
     parser.add_argument('--agent_model', default="QNetworkAgent", type=str, help='loss-function model name')

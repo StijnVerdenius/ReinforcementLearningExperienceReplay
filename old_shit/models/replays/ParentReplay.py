@@ -1,4 +1,4 @@
-from models.GeneralModel import GeneralModel
+from old_shit.models import GeneralModel
 
 
 class ParentReplay(GeneralModel):

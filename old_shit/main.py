@@ -4,8 +4,8 @@ import sys
 
 import numpy as np
 
-from plot import Plotter
-from train import Trainer
+from old_shit.plot import Plotter
+from old_shit.train import Trainer
 from utils.constants import *
 from utils.model_utils import find_right_model
 from utils.system_utils import ensure_current_directory

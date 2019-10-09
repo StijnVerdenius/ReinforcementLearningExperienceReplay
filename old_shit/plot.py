@@ -5,8 +5,8 @@ from typing import List, Dict
 import matplotlib.pyplot as plt
 import numpy as np
 
-from models.agents import ParentAgent
-from models.replays import ParentReplay
+from old_shit.models.agents import ParentAgent
+from old_shit.models.replays import ParentReplay
 
 
 class Plotter:
@@ -70,6 +70,10 @@ class Plotter:
 
     def animate(self, n=10):
         self.agent.eval()
+
         for i in range(n):
-            pass
+            s = self.environment.reset()
+            done = False
+            while not done:
+                self.environment.step()
 

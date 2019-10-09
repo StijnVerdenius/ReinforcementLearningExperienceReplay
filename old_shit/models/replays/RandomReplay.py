@@ -1,6 +1,6 @@
 import numpy as np
 
-from models.replays.ParentReplay import ParentReplay
+from old_shit.models.replays.ParentReplay import ParentReplay
 
 
 class RandomReplay(ParentReplay):

@@ -7,9 +7,9 @@ import numpy as np
 from tensorboardX import SummaryWriter
 from torch.optim.optimizer import Optimizer
 
-from models.agents import ParentAgent
-from models.losses import ParentLoss
-from models.replays import ParentReplay, PriorityReplay
+from old_shit.models.agents import ParentAgent
+from old_shit.models.losses import ParentLoss
+from old_shit.models.replays import ParentReplay, PriorityReplay
 from utils.constants import *
 from utils.model_utils import save_models
 from utils.system_utils import setup_directories, save_codebase_of_run, autodict, report_error

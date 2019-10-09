@@ -2,7 +2,7 @@ from typing import Any
 
 from torch import Tensor
 
-from models.GeneralModel import GeneralModel
+from old_shit.models import GeneralModel
 
 
 class ParentLoss(GeneralModel):

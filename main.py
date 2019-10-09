@@ -81,7 +81,7 @@ def parse() -> argparse.Namespace:
     # bool
     parser.add_argument('--test-mode', action='store_true', help='start in train_mode')  # todo: implement
 
-    parser.add_argument("--device", type=str,
+    parser.add_argument("--device", type=str, default="cuda",
                         help="Device to be used. Pick from none/cpu/cuda. "
                              "If default none is used automatic check will be done")
     parser.add_argument("--seed", type=int, default=42, metavar="S", help="random seed (default: 42)")

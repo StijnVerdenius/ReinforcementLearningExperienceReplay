@@ -44,6 +44,9 @@ class Trainer:
         self._patience = patience
         self._global_steps = 0
 
+        # initialize metrics dict
+        self.metrics = defaultdict(list)
+
         # init current runs timestamp
         DATA_MANAGER.set_date_stamp(addition=arguments.run_name)
 
@@ -64,9 +67,6 @@ class Trainer:
 
         episode = 0
 
-        # initialize metrics dict
-        metrics = defaultdict(list)
-
         try:
 
             print(f"{PRINTCOLOR_BOLD}Started training with the following config:{PRINTCOLOR_END}\n{self.arguments}\n\n")
@@ -78,7 +78,7 @@ class Trainer:
             for episode in range(self.arguments.episodes):
 
                 # do epoch
-                episode_durations, losses, reward, metrics = self._episode_iteration(metrics)
+                episode_durations, losses, reward = self._episode_iteration()
 
                 # add progress-list to global progress-list
 
@@ -181,7 +181,7 @@ class Trainer:
                 index = torch.argmax(q, -1)
                 return index.tolist()
 
-    def _episode_iteration(self, metrics):
+    def _episode_iteration(self):
 
         step = 0
         s = self.environment.reset()
@@ -220,18 +220,19 @@ class Trainer:
             if done:
                 break
 
-        metrics['durations'].append(step)
-        metrics['mean_TD_error'].append(np.mean(td_errors))
-        # metrics['median_TD_error'].append() ######################
-        metrics['max_TD_error'].append(np.max(td_errors))
-        metrics['std_TD_error'].append(np.std(td_errors))
+        self.metrics['score'].append(summed_reward)
+        self.metrics['durations'].append(step)
+        self.metrics['mean_TD_error'].append(np.mean(td_errors))
+        self.metrics['median_TD_error'].append(np.median(td_errors))
+        self.metrics['max_TD_error'].append(np.max(td_errors))
+        self.metrics['std_TD_error'].append(np.std(td_errors))
         # metrics['correlation_count'] = np.zeros(self.arguments.episodes) ??????????
         # metrics['Q_values'] = []
         # metrics['rewards'] = []
 
 
 
-        return step, loss, summed_reward, metrics
+        return step, loss, summed_reward
 
     def _get_epsilon(self):
         if self._global_steps >= 1000:

@@ -55,7 +55,7 @@ def parse() -> argparse.Namespace:
 
 
     # int
-    parser.add_argument('--episodes', default=10, type=int, help='max number of episodes')
+    parser.add_argument('--episodes', default=50, type=int, help='max number of episodes')
     parser.add_argument('--eval_freq', default=10, type=int, help='evaluate every x batches')
     parser.add_argument('--saving_freq', default=1, type=int, help='save every x epochs')  # todo: implement
     parser.add_argument('--batch_size', default=64, type=int, help='size of batches')

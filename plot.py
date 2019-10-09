@@ -3,6 +3,7 @@ import argparse
 from typing import List, Dict
 
 import matplotlib.pyplot as plt
+import numpy as np
 
 from models.agents import ParentAgent
 from models.replays import ParentReplay
@@ -41,10 +42,31 @@ class Plotter:
 
                 except IndexError:
                     break
+            batches = []
+            for i, element in enumerate(values):
+                if (i % self.arguments.eval_freq) == 0:
+                    batches.append([])
+                if element is not None:
+                    batches[-1].append(element)
 
-            plt.title(key)
-            plt.plot(values)
-            plt.show()
+            try:
+
+                mean = np.array([np.mean(sublist) for sublist in batches])
+                std = np.array([np.std(sublist) for sublist in batches])
+                upper = mean + std
+                lower = mean - std
+
+                plt.title(key)
+                plt.fill_between(range(len(mean)), lower, upper, alpha=0.5, color="gray")
+                plt.plot(upper, color="black", alpha=0.9, linestyle=":")
+                plt.plot(lower, color="black", alpha=0.9, linestyle=":")
+                plt.xticks(range(len(mean)), [self.arguments.eval_freq*i for i in range(len(mean))])
+                plt.xlabel("Episodes")
+
+                plt.plot(mean, color="black")
+                plt.show()
+            except Exception as e:
+                print(key, e)
 
     def animate(self, n=10):
         self.agent.eval()

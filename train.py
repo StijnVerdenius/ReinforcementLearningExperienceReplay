@@ -135,7 +135,7 @@ class Trainer:
         return loss.item()
 
     def _collect_metrics(self, *stuff):
-        return {"dummy_metric": stuff}  # todo elias
+        return {"dummy_metric": 0 }  # todo elias
 
     def _compute_q_val(self, state, action):
         state = self._restore_state(state)

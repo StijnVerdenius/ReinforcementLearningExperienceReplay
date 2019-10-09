@@ -2,10 +2,11 @@
 import argparse
 from typing import List, Dict
 
+import matplotlib.pyplot as plt
+
 from models.agents import ParentAgent
 from models.replays import ParentReplay
 
-import matplotlib.pyplot as plt
 
 class Plotter:
 
@@ -31,6 +32,7 @@ class Plotter:
             values = []
             while True:
                 try:
+
                     stat = self.statistics[counter]
 
                     values.append(stat[key])
@@ -40,15 +42,12 @@ class Plotter:
                 except IndexError:
                     break
 
-
             plt.title(key)
             plt.plot(values)
             plt.show()
 
-
     def animate(self, n=10):
         self.agent.eval()
         for i in range(n):
-
             # todo: animate
             pass

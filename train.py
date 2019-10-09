@@ -64,7 +64,6 @@ class Trainer:
 
         # data gathering
         progress = []
-
         episode = 0
 
         try:
@@ -83,6 +82,7 @@ class Trainer:
                 # add progress-list to global progress-list
 
                 progress += [{**autodict(episode_durations, losses, episode, reward), **self._collect_metrics(None)}]
+
                 if (episode % self.arguments.eval_freq) == 0:
 
                     # write progress to pickle file (overwrite because there is no point keeping seperate versions)
@@ -139,7 +139,7 @@ class Trainer:
         return loss.item()
 
     def _collect_metrics(self, *stuff):
-        return {"dummy_metric": 0 }  # todo elias
+        return self.metrics
 
     def _compute_q_val(self, state, action):
         state = self._restore_state(state)
@@ -189,6 +189,7 @@ class Trainer:
         summed_reward = 0
 
         td_errors = []
+        # correlation = []
 
         while True:
             action = self._select_action(s, self._get_epsilon())
@@ -208,28 +209,29 @@ class Trainer:
 
             # increment parameters
             td_errors.append(error)
+            # mini_batch = np.array((s, action, r, s_next, done)).transpose()
+            # states = np.vstack(mini_batch[0])
+            # correlation.append(self.correlation_count(states))
+
             step += 1
             self._global_steps += 1
 
             s = s_next
-
-
 
             loss = self._step_train()
 
             if done:
                 break
 
-        self.metrics['score'].append(summed_reward)
-        self.metrics['durations'].append(step)
-        self.metrics['mean_TD_error'].append(np.mean(td_errors))
-        self.metrics['median_TD_error'].append(np.median(td_errors))
-        self.metrics['max_TD_error'].append(np.max(td_errors))
-        self.metrics['std_TD_error'].append(np.std(td_errors))
+        self.metrics['score'] = summed_reward
+        self.metrics['durations'] = step
+        self.metrics['mean_TD_error'] = np.mean(td_errors)
+        self.metrics['median_TD_error'] = np.median(td_errors)
+        self.metrics['max_TD_error'] = np.max(td_errors)
+        self.metrics['std_TD_error'] = np.std(td_errors)
         # metrics['correlation_count'] = np.zeros(self.arguments.episodes) ??????????
         # metrics['Q_values'] = []
         # metrics['rewards'] = []
-
 
 
         return step, loss, summed_reward
@@ -269,3 +271,14 @@ class Trainer:
         # loss is measured from error between current and newly expected Q values
         loss = self.loss(q_val, target)
         return loss
+
+    def correlation_count(state, threshold=0.8):
+        cov=np.cov(state)
+        corrcoeff = cov.copy()
+        n_samples = cov.shape[0]
+        for i in range(n_samples):
+            corrcoeff[i,:]=corrcoeff[i,:]/np.sqrt(cov[i,i])
+        for j in range(n_samples):
+            corrcoeff[:,j]=corrcoeff[:,j]/np.sqrt(cov[j,j])
+
+        return (np.sum(np.abs(corrcoeff)>threshold) - n_samples) / 2

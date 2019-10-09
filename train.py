@@ -78,8 +78,8 @@ class Trainer:
 
                 # add progress-list to global progress-list
 
+                progress += [{**autodict(episode_durations, losses, episode, reward), **self._collect_metrics(None)}]
                 if (episode % self.arguments.eval_freq) == 0:
-                    progress += [{**autodict(episode_durations, losses, episode, reward), **self._collect_metrics(None)}]
 
                     # write progress to pickle file (overwrite because there is no point keeping seperate versions)
                     DATA_MANAGER.save_python_obj(progress,
@@ -159,13 +159,16 @@ class Trainer:
         if (isinstance(state, (int, float, np.int64))):
             state = [state]
         elif (len(state.shape) == 1 and isinstance(state, torch.Tensor)):
-            state = state.unsqueeze(0).T
+            state = state.unsqueeze(0).T.to(self._device)
         return state
 
     def _select_action(self, state, epsilon):
         with torch.no_grad():
             state = self._restore_state(state)
-            q = self.agent.forward(torch.Tensor(state).float())
+            # q = self.agent.forward(torch.Tensor(state).float())
+            if (not isinstance(state, torch.Tensor)):
+                state = torch.Tensor(state).float().to(self._device)
+            q = self.agent.forward(state)
             if isinstance(self.agent.actions, tuple):
                 return q.tolist()
             else:
@@ -227,11 +230,11 @@ class Trainer:
     def _compute_loss(self, state, action, reward, next_state, done):
 
         # convert to PyTorch and define types
-        state = torch.tensor(state, dtype=torch.float)
-        action = torch.tensor(action, dtype=torch.int64)  # Need 64 bit to use them as index
-        next_state = torch.tensor(next_state, dtype=torch.float)
-        reward = torch.tensor(reward, dtype=torch.float)
-        done = torch.tensor(done, dtype=torch.uint8)  # Boolean
+        state = torch.tensor(state, dtype=torch.float).to(self._device)
+        action = torch.tensor(action, dtype=torch.int64).to(self._device) # Need 64 bit to use them as index
+        next_state = torch.tensor(next_state, dtype=torch.float).to(self._device)
+        reward = torch.tensor(reward, dtype=torch.float).to(self._device)
+        done = torch.tensor(done, dtype=torch.uint8).to(self._device) # Boolean
 
         # compute the q value
         q_val = self._compute_q_val(state, action)

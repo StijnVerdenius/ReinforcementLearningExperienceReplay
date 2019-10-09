@@ -13,8 +13,8 @@ from utils.system_utils import ensure_current_directory
 
 def main(arguments: argparse.Namespace):
     device = arguments.device
-    if arguments.device is None:
-        device = "cuda" if torch.cuda.is_available() else "cpu"
+
+    device = "cuda" if torch.cuda.is_available() else "cpu"
 
     # for reproducibility
     torch.manual_seed(arguments.seed)
@@ -71,12 +71,12 @@ def parse() -> argparse.Namespace:
 
     # string
     # parser.add_argument('--environment', default="BipedalWalker-v2", type=str, help='classifier model name')
-    parser.add_argument('--environment', default="CartPole-v0", type=str, help='classifier model name')
-    # parser.add_argument('--environment', default="LunarLander-v2", type=str, help='classifier model name')
+    # parser.add_argument('--environment', default="CartPole-v0", type=str, help='classifier model name')
+    parser.add_argument('--environment', default="LunarLander-v2", type=str, help='classifier model name')
     # parser.add_argument('--environment', default="MountainCar-v0", type=str, help='classifier model name')
     # parser.add_argument('--environment', default="FrozenLake8x8-v0", type=str, help='classifier model name')
 
-    parser.add_argument('--replay', default="RandomTrajectoryReplay", type=str, help='generator model name')
+    parser.add_argument('--replay', default="PriorityReplay", type=str, help='generator model name')
     parser.add_argument('--loss', default="SmoothF1Loss", type=str, help='loss-function model name')
     parser.add_argument('--optimizer', default="ADAM", type=str, help='loss-function model name')
     parser.add_argument('--agent_model', default="QNetworkAgent", type=str, help='loss-function model name')

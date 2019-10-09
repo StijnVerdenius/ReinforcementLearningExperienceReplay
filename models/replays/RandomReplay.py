@@ -18,7 +18,7 @@ class RandomReplay(ParentReplay):
 
     def sample(self, batch_size):
         rand_idx = np.random.randint(0, len(self.memory), size = batch_size)
-        return self.memory[rand_idx]
+        return np.array(self.memory)[rand_idx].tolist()
 
     def __len__(self):
         return len(self.memory)

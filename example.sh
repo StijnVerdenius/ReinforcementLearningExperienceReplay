@@ -4,9 +4,9 @@ for replayMemory in PriorityReplay RandomReplay  # todo: add values
 do
   for environment in CartPole-v0
   do
-    for seed in 42 43
+    for seed in 42
       do
-        python3 main.py --environment $environment --episodes 20 --run_name $environment  --seed $seed --replay $replayMemory
+        python3 main.py --environment $environment --episodes 200 --run_name $environment  --seed $seed --replay $replayMemory
       done
   done
 done

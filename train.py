@@ -2,6 +2,7 @@ import argparse
 import math
 import sys
 import time
+from collections import defaultdict
 
 import numpy as np
 from tensorboardX import SummaryWriter
@@ -63,6 +64,9 @@ class Trainer:
 
         episode = 0
 
+        # initialize metrics dict
+        metrics = defaultdict(list)
+
         try:
 
             print(f"{PRINTCOLOR_BOLD}Started training with the following config:{PRINTCOLOR_END}\n{self.arguments}\n\n")
@@ -74,7 +78,7 @@ class Trainer:
             for episode in range(self.arguments.episodes):
 
                 # do epoch
-                episode_durations, losses, reward = self._episode_iteration()
+                episode_durations, losses, reward, metrics = self._episode_iteration(metrics)
 
                 # add progress-list to global progress-list
 
@@ -177,12 +181,18 @@ class Trainer:
                 index = torch.argmax(q, -1)
                 return index.tolist()
 
+<<<<<<< HEAD
     def _episode_iteration(self):
+=======
+    def _episode_iteration(self, metrics):
+>>>>>>> d86cb8dff343aba2035b1aceb7939f37157471ec
 
         step = 0
         s = self.environment.reset()
 
         summed_reward = 0
+
+        td_errors = []
 
         while True:
             action = self._select_action(s, self._get_epsilon())
@@ -190,25 +200,42 @@ class Trainer:
 
             summed_reward += r
 
+            # compute td error
+            error = self._compute_loss([s], [action], [r], [s_next], [done]).item()
+
             if type(self.memory) is PriorityReplay.PriorityReplay:
                 # Priority replay memory push
-                error = self._compute_loss([s], [action], [r], [s_next], [done]).item()
                 self.memory.push((s, action, r, s_next, done), error)
             else:
                 # Default memory push
                 self.memory.push((s, action, r, s_next, done))
 
+            # increment parameters
+            td_errors.append(error)
             step += 1
             self._global_steps += 1
 
             s = s_next
+
+
 
             loss = self._step_train()
 
             if done:
                 break
 
-        return step, loss, summed_reward
+        metrics['durations'].append(step)
+        metrics['mean_TD_error'].append(np.mean(td_errors))
+        # metrics['median_TD_error'].append() ######################
+        metrics['max_TD_error'].append(np.max(td_errors))
+        metrics['std_TD_error'].append(np.std(td_errors))
+        # metrics['correlation_count'] = np.zeros(self.arguments.episodes) ??????????
+        # metrics['Q_values'] = []
+        # metrics['rewards'] = []
+
+
+
+        return step, loss, summed_reward, metrics
 
     def _get_epsilon(self):
         if self._global_steps >= 1000:

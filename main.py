@@ -14,7 +14,7 @@ from utils.system_utils import ensure_current_directory
 def main(arguments: argparse.Namespace):
     device = arguments.device
 
-    device = "cuda" if (torch.cuda.is_available() and device == "cuda") else "cpu"
+    device = "cuda" if torch.cuda.is_available() else "cpu"
 
     # for reproducibility
     torch.manual_seed(arguments.seed)

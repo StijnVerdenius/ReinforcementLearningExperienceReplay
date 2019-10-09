@@ -4,6 +4,7 @@ import sys
 
 import numpy as np
 
+from plot import Plotter
 from train import Trainer
 from utils.constants import *
 from utils.model_utils import find_right_model
@@ -40,7 +41,9 @@ def main(arguments: argparse.Namespace):
 
         optimizer = find_right_model(OPTIMS, arguments.optimizer, params=agent.parameters(), lr=arguments.learning_rate)
 
-        Trainer(environment, replay_memory, loss, agent, optimizer, device, arguments.patience, arguments).train()
+        stats = Trainer(environment, replay_memory, loss, agent, optimizer, device, arguments.patience, arguments).train()
+
+        Plotter(environment, replay_memory, agent, device, stats, arguments).plot()
 
 
 def parse() -> argparse.Namespace:
@@ -50,7 +53,7 @@ def parse() -> argparse.Namespace:
 
 
     # int
-    parser.add_argument('--episodes', default=500, type=int, help='max number of episodes')
+    parser.add_argument('--episodes', default=100, type=int, help='max number of episodes')
     parser.add_argument('--eval_freq', default=10, type=int, help='evaluate every x batches')
     parser.add_argument('--saving_freq', default=1, type=int, help='save every x epochs')  # todo: implement
     parser.add_argument('--batch_size', default=64, type=int, help='size of batches')

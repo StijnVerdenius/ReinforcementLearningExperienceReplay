@@ -78,8 +78,8 @@ class Trainer:
 
                 # add progress-list to global progress-list
 
+                progress += [{**autodict(episode_durations, losses, episode, reward), **self._collect_metrics(None)}]
                 if (episode % self.arguments.eval_freq) == 0:
-                    progress += [{**autodict(episode_durations, losses, episode, reward), **self._collect_metrics(None)}]
 
                     # write progress to pickle file (overwrite because there is no point keeping seperate versions)
                     DATA_MANAGER.save_python_obj(progress,

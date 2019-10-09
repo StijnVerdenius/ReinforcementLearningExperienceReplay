@@ -179,6 +179,8 @@ class Trainer:
 
     def _episode_iteration(self):
 
+        print("new")
+
         step = 0
         s = self.environment.reset()
 
@@ -187,6 +189,10 @@ class Trainer:
         while True:
             action = self._select_action(s, self._get_epsilon())
             s_next, r, done, _ = self.environment.step(action)
+
+
+            if (not r == 0 ):
+                print(r)
 
             summed_reward += r
 

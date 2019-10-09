@@ -28,6 +28,7 @@ def main(arguments: argparse.Namespace):
     replay_memory = find_right_model(REPLAY_DIR, arguments.replay, capacity=arguments.replay_capacity, device=device,
                                      example_param="example_value")
     environment = find_right_model(ENV_DIR, arguments.environment, device=device, example_param="example_value")
+    environment.seed(arguments.seed)
     agent = find_right_model(AG_DIR, arguments.agent_model, device=device, num_hidden=arguments.hidden_dim,
                              actions=environment.action_space, state_size=environment.observation_space)
 
@@ -55,7 +56,7 @@ def parse() -> argparse.Namespace:
 
 
     # int
-    parser.add_argument('--episodes', default=200, type=int, help='max number of episodes')
+    parser.add_argument('--episodes', default=100, type=int, help='max number of episodes')
     parser.add_argument('--eval_freq', default=10, type=int, help='evaluate every x batches')
     parser.add_argument('--saving_freq', default=1, type=int, help='save every x epochs')  # todo: implement
     parser.add_argument('--batch_size', default=64, type=int, help='size of batches')
@@ -67,16 +68,17 @@ def parse() -> argparse.Namespace:
     # float
     parser.add_argument('--learning_rate', default=1e-3, type=float, help='learning rate')
     parser.add_argument('--discount_factor', default=0.8, type=float, help='discount factor')
-    parser.add_argument('--replay_capacity', default=10000, type=int, help='max capcity of replay buffer')
+    parser.add_argument('--replay_capacity', default=10000, type=int, help='max capacity of replay buffer')
 
     # string
     # parser.add_argument('--environment', default="BipedalWalker-v2", type=str, help='classifier model name')
     parser.add_argument('--environment', default="CartPole-v0", type=str, help='classifier model name')
-    # parser.add_argument('--environment', default="LunarLander-v2", type=str, help='classifier model name')
-    # parser.add_argument('--environment', default="MountainCar-v0", type=str, help='classifier model name')
+    parser.add_argument('--environment', default="LunarLander-v2", type=str, help='classifier model name')
+    parser.add_argument('--environment', default="MountainCar-v0", type=str, help='classifier model name')
     # parser.add_argument('--environment', default="FrozenLake8x8-v0", type=str, help='classifier model name')
+    parser.add_argument('--environment', default="Breakout-ram-v0", type=str, help='classifier model name')
 
-    parser.add_argument('--replay', default="RandomTrajectoryReplay", type=str, help='generator model name')
+    parser.add_argument('--replay', default="PriorityReplay", type=str, help='generator model name')
     parser.add_argument('--loss', default="SmoothF1Loss", type=str, help='loss-function model name')
     parser.add_argument('--optimizer', default="ADAM", type=str, help='loss-function model name')
     parser.add_argument('--agent_model', default="QNetworkAgent", type=str, help='loss-function model name')

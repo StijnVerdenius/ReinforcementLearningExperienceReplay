@@ -43,5 +43,5 @@ TEST_SET = "test"
 VALIDATION_SET = "validation"
 TRAIN_SET = "train"
 
-GYMS = ["CartPole-v0", "MountainCar-v0", "MountainCarContinuous-v0", "Pendulum-v0", "LunarLander-v2", "LunarLanderContinuous-v2", "BipedalWalker-v2" , "CarRacing-v0", "Breakout-v0", "MsPacman-v0", "Reverse-v0", "Ant-v2", "FrozenLake8x8-v0", "Blackjack-v0", "FetchPickAndPlace-v1"]
+GYMS = ["Breakout-ram-v0", "CartPole-v0", "MountainCar-v0", "MountainCarContinuous-v0", "Pendulum-v0", "LunarLander-v2", "LunarLanderContinuous-v2", "BipedalWalker-v2" , "CarRacing-v0", "Breakout-v0", "MsPacman-v0", "Reverse-v0", "Ant-v2", "FrozenLake8x8-v0", "Blackjack-v0", "FetchPickAndPlace-v1"]
 

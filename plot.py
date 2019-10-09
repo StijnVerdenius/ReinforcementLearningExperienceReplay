@@ -71,5 +71,5 @@ class Plotter:
     def animate(self, n=10):
         self.agent.eval()
         for i in range(n):
-            # todo: animate
             pass
+

@@ -36,13 +36,19 @@ class Plotter:
                     values.append(stat[key])
 
                     counter += 1
-                except:
+
+                except IndexError:
                     break
+
 
             plt.title(key)
             plt.plot(values)
             plt.show()
 
 
-    def animate(self):
-        pass
+    def animate(self, n=10):
+        self.agent.eval()
+        for i in range(n):
+
+            # todo: animate
+            pass

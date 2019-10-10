@@ -64,8 +64,12 @@ for run_dets,metrics in aggr_data.items():
     for i, (metric, stats) in enumerate(metrics.items()):
         mean = stats["mean"]
         std = stats["std_dev"]
+        upper = mean + std
+        lower = mean - std
         ax = axes[i // columns, i % columns]
-        ax.plot(range(len(mean)), mean)
+        ax.fill_between(range(len(mean)), lower, upper, alpha=0.5, color="gray")
+        ax.plot(upper, color="black", alpha=0.9, linestyle=":")
+        ax.plot(lower, color="black", alpha=0.9, linestyle=":")
         ax.set_title(metric)
 
 plt.show()

@@ -44,9 +44,10 @@ def main(arguments: argparse.Namespace):
 
         stats = Trainer(environment, replay_memory, loss, agent, optimizer, device, arguments.patience, arguments).train()
 
-        plotter = Plotter(environment, replay_memory, agent, device, stats, arguments)
-        plotter.plot()
-        plotter.animate()
+        if arguments.plot:
+            plotter = Plotter(environment, replay_memory, agent, device, stats, arguments)
+            plotter.plot()
+            plotter.animate()
 
 
 def parse() -> argparse.Namespace:
@@ -87,6 +88,7 @@ def parse() -> argparse.Namespace:
 
     # bool
     parser.add_argument('--test-mode', action='store_true', help='start in train_mode')  # todo: implement
+    parser.add_argument('--plot', default=False, type=str, help='plot when done')
 
     parser.add_argument("--device", type=str, default="cuda",
                         help="Device to be used. Pick from none/cpu/cuda. "

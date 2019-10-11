@@ -3,8 +3,6 @@
 A recent breakthrough in AI has been the successful integration of RL with DL, which substantially improved the capacity of such models to learn complex policies for sequential decision-making problems. 
 This has been famously demonstrated by the deep Q network (DQN), exhibiting expert play on Atari 2600 video game, or by AlphaGo, defeating the best human player at the game of Go. 
  
-$$test_t$$
-
 ### What is deep Q-learning?
 
 The former algorithm, deep Q-learning, is exactly what the name suggests; the Deep-learning variant of the famous Q-learning algorithm. 

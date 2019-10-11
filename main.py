@@ -16,19 +16,26 @@ def main(arguments: argparse.Namespace):
 
     device = "cuda" if torch.cuda.is_available() else "cpu"
 
+    if arguments.random_seed:
+        seed = np.random.randint(0, 1e6)
+    else:
+        seed = arguments.seed
+
+    print(seed)
+
     # for reproducibility
-    torch.manual_seed(arguments.seed)
-    np.random.seed(arguments.seed)
-    random.seed(arguments.seed)
+    torch.manual_seed(seed)
+    np.random.seed(seed)
+    random.seed(seed)
 
     if device == 'cuda':
         torch.backends.cudnn.benchmark = False
-        torch.cuda.manual_seed_all(arguments.seed)
+        torch.cuda.manual_seed_all(seed)
 
     replay_memory = find_right_model(REPLAY_DIR, arguments.replay, capacity=arguments.replay_capacity, device=device,
                                      example_param="example_value")
     environment = find_right_model(ENV_DIR, arguments.environment, device=device, example_param="example_value")
-    environment.seed(arguments.seed)
+    environment.seed(seed)
     agent = find_right_model(AG_DIR, arguments.agent_model, device=device, num_hidden=arguments.hidden_dim,
                              actions=environment.action_space, state_size=environment.observation_space)
 
@@ -94,6 +101,7 @@ def parse() -> argparse.Namespace:
                         help="Device to be used. Pick from none/cpu/cuda. "
                              "If default none is used automatic check will be done")
     parser.add_argument("--seed", type=int, default=42, metavar="S", help="random seed (default: 42)")
+    parser.add_argument("--random_seed", action="store_false")
     parser.add_argument("--patience", type=int, default=30,
                         help="how long will the model wait for improvement before stopping training")  # todo: implement
 

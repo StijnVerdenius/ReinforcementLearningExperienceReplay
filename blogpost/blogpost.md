@@ -1,26 +1,30 @@
-# Choosing a Memory-Replay Method for Deep Q-learning
+# Choosing an Experience-Replay Method for Deep Q-learning
 
-A recent breakthrough in AI has been the successful integration of Deep Learning into Reinforcement Learning, which substantially improved the capacity of such models to learn complex policies for sequential decision-making problems. 
-This has been famously demonstrated by the deep Q network (DQN), exhibiting expert play on Atari 2600 video game, or by AlphaGo, defeating the best human player at the game of Go. 
+Reinforcement learning has gained a lot of popularity in recent years due some spectacular successes due to the successful integration of Deep Learning into Reinforcement Learning. This breakthrough substantially improved the capacity of such models to learn complex policies for sequential decision-making problems, famously demonstrated by the deep Q network (DQN), exhibiting expert play on Atari 2600 video game, or by AlphaGo, defeating the best human player at the game of Go. In this blog-post we will discuss a key ingredient of DQN that contributed to the success of these networks called "experience replay". 
+
+
+### First of all, what is DQN?
+
+DQN, is exactly what the name suggests; the deep-learning neural network used as a non-linear approximator of the Q-function. Just to remind ourselves, here, the "Q" in Q-learning stands for quality, representing how useful an action is, given the current state, with respect to gaining future reward. Therefore, we want to learn a mapping between state-action pairs, and their respective q-values. Now our implementation of DQN will be a two-layer deep neural network
+
+
+
+
+
+The parameters $\textbf{w}$ of the network are then updated using the following update rule 
+
+
+
+
+Now our implementation of DQN will be a two-layer deep neural network, used as a non-linear approximation of the state-action value function (Q function). Therefore, it maps state-action pairs to their respective q-values. The parameters $\textbf{w}$ of the network are then updated using the following update rule 
  
-### What is deep Q-learning?
-
-The former algorithm, deep Q-learning, is exactly what the name suggests; the Deep-learning variant of the famous Q-learning algorithm. 
-This algorithm tries to optimize the expected value of state-action pairs given its current estimate of the best next state after. This value is modeled by the Q function, which looks like this: 
-
-**TODO:** $$insert Q function$$
-
-**TODO:** explain elements like youre explaining it to a toddler.
-It does so model-free, meaning it does not depend on a interpretation of the environment.
-
  
 ### So, Why Do We Need Replay Methods?
 
-A key ingredient in these networks is "experience replay", which enables agents to memorize and reuse past experiences multiple times. 
+Experience replay is a mechanism enabling agents to memorize and reuse past experiences multiple times. 
 This has been inspired from "memory replay", a biological process that occurs in the brain during sleep, important for memory processing and consolidation.
-In practice, experience replay is implemented by storing the training data in a memory buffer and subsequently, replay/process the "memories" offline. 
-This has proven to improve sample efficiency, and stabilizing the training by breaking the correlations between experiences. 
-Besides, it helps a network "remember" what happened some time ago.
+In practice, experience replay is implemented by storing the training data in a memory buffer and subsequently, replay/process the "memories" offline. We can interpret this as our agent remembering/daydreaming past experiences.
+This has been empirically shown to improve learning efficiency, and stabilize the training by breaking the correlations between experiences. 
 
 <br>
 **TODO:**format picture
@@ -31,9 +35,16 @@ caption: Robots dream too!
 <br>
 
 Typically, off-policy algorithms assume a uniform sampling strategy, replaying the different past experiences with equal frequency.
-However, not every situation requires the same kind of replay.
 Intuitively, our agent can learn better and more efficiently by prioritizing the processing of task-relevant experiences over that of redundant/irrelevant experiences. 
+However, being relevant can be subjective, and therefore we can assume that different sorting criteria can be important in different situations; that is, not every situation could benefit optimally using the same kind of replay.
 We will discuss a few cases were you could choose for a particular replay method.
+
+### How can we analyze the effect of different Experience Replay Methods?
+
+
+### Let's experiment!
+
+
 
 ## Why Some Replay Methods Work Better for Some Environments:
 

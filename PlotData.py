@@ -1,8 +1,16 @@
+import time
 from collections import defaultdict
 
 import matplotlib.pyplot as plt
 import numpy as np
+import os
 
+metric_dict = {
+    "PriorityReplay" : "PER",
+    "RandomReplay" : "RAND",
+    "RandomTrajectoryReplay" : "RTER",
+    "RecentReplay" : "RER"
+}
 def moving_average(a, n=3) :
     ret = np.cumsum(a, dtype=float)
     ret[n:] = ret[n:] - ret[:-n]
@@ -17,7 +25,7 @@ class AutoVivification(dict):
             value = self[item] = type(self)()
             return value
 
-def plot_metrics_for_environment(path_to_env):
+def plot_metrics_for_environment(path_to_env, episodes = 200):
 
     env_name = path_to_env.split("/")[2]
 
@@ -32,7 +40,7 @@ def plot_metrics_for_environment(path_to_env):
         data_file = dir + "/progress/progress_list"
         with open(args_file) as f:
             lines = f.readlines()
-            filtered_lines = [line for line in lines if "seed" not in line]
+            filtered_lines = [line for line in lines if "seed" not in line and "run_name" not in line]
             args = ",".join(filtered_lines).replace("\n","")
             all_runs.add(args)
 
@@ -63,19 +71,19 @@ def plot_metrics_for_environment(path_to_env):
     for run_dets,metrics in aggr_data.items():
         replay_type = run_dets.split("replay='")[1].split("'")[0]
         for i, (metric, stats) in enumerate(metrics.items()):
-            mean = stats["mean"]
-            std = stats["std_dev"]
+            mean = stats["mean"][0:episodes]
+            std = stats["std_dev"][0:episodes]
             # upper = mean + std
             # lower = mean - std
             ax = axes[i // columns, i % columns]
             # ax.fill_between(range(len(mean)), lower, upper, alpha=0.5, color="gray")
             # ax.plot(upper, color="black", alpha=0.9, linestyle=":")
             # ax.plot(lower, color="black", alpha=0.9, linestyle=":")
-            ax.plot(moving_average(mean,n= 10), alpha=0.9, label=replay_type)
+            ax.plot(moving_average(mean,n= 30), alpha=0.9, label=metric_dict[replay_type])
             ax.legend()
             ax.set_title(metric)
 
-    plt.savefig("gitignored/plots/" + env_name + ".png", dpi = 400)
+    plt.savefig("gitignored/plots/" + env_name +  str(time.time()) + ".png" , dpi = 400)
 
 from utils.data_manager import DataManager
 '''
@@ -86,13 +94,13 @@ folder and your data will be in the data object
 '''
 loader = DataManager("")
 
-import os
-
+print(os.listdir())
 if not os.path.exists("gitignored/plots"):
     os.mkdir("gitignored/plots")
 
 res_path = "gitignored/results/"
-for env_path in os.listdir(res_path):
-    if ".py" not in env_path:
-        plot_metrics_for_environment(res_path + env_path)
+# for env_path in os.listdir(res_path):
+#     print(env_path)
+#     if ".py" not in env_path:
+plot_metrics_for_environment(res_path + "MountainCar-v0")
 

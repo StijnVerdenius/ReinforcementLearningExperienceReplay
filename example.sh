@@ -2,13 +2,11 @@
 
 for replayMemory in PriorityReplay RandomReplay RandomTrajectoryReplay RecentReplay  # todo: add values
 do
-  for environment in CartPole-v0
+  for environment in "FrozenLakeExtension"
   do
     for seed in 42 54 23 65 34
       do
-        python3 main.py --environment $environment --episodes 200 --run_name $environment  --seed $seed --replay $replayMemory
+        python3 main.py --environment $environment --episodes 200 --run_name "_"$environment"_"$replayMemory"_"$seed"_"  --seed $seed --replay $replayMemory
       done
   done
 done
-
-# .... Breakout-v0 MsPacman-v0 Reverse-v0 Ant-v2 FetchPickAndPlace-v1

@@ -2,7 +2,7 @@
 
 for replayMemory in PriorityReplay RandomReplay RandomTrajectoryReplay RecentReplay  # todo: add values
 do
-  for environment in "BipedalWalker-v2"
+  for environment in "FrozenLakeExtension"
   do
     for seed in 42 54 23 65 34
       do

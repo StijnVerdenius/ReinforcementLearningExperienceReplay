@@ -116,3 +116,5 @@ gitignored
 ##### pycharm idea
 
 .idea
+/gitignored/
+/gitignored/results/

@@ -39,7 +39,7 @@ def main(arguments: argparse.Namespace):
     agent = find_right_model(AG_DIR, arguments.agent_model, device=device, num_hidden=arguments.hidden_dim,
                              actions=environment.action_space, state_size=environment.observation_space)
 
-    if arguments.test_mode:
+    if False:#arguments.test_mode:
 
         pass  # todo
 
@@ -68,6 +68,7 @@ def parse() -> argparse.Namespace:
     parser.add_argument('--eval_freq', default=10, type=int, help='evaluate every x batches')
     parser.add_argument('--batch_size', default=64, type=int, help='size of batches')
     parser.add_argument('--hidden_dim', default=64, type=int, help='size of batches')
+    parser.add_argument('--patience', default=64, type=int, help='size of batches') # not implemented
 
     # float
     parser.add_argument('--learning_rate', default=1e-3, type=float, help='learning rate')
@@ -79,8 +80,9 @@ def parse() -> argparse.Namespace:
     # parser.add_argument('--environment', default="CartPole-v0", type=str, help='classifier model name')
     # parser.add_argument('--environment', default="LunarLander-v2", type=str, help='classifier model name')
     # parser.add_argument('--environment', default="MountainCar-v0", type=str, help='classifier model name')
-    parser.add_argument('--environment', default="FrozenLakeExtension", type=str, help='classifier model name')
+    # parser.add_argument('--environment', default="FrozenLakeExtension", type=str, help='classifier model name')
     # parser.add_argument('--environment', default="Breakout-ram-v0", type=str, help='classifier model name')
+    parser.add_argument('--environment', default="TestGridWorld", type=str, help='classifier model name')
 
     parser.add_argument('--replay', default="PriorityReplay", type=str, help='generator model name')
     parser.add_argument('--loss', default="SmoothF1Loss", type=str, help='loss-function model name')

@@ -60,7 +60,7 @@ class Plotter:
                 plt.fill_between(range(len(mean)), lower, upper, alpha=0.5, color="gray")
                 plt.plot(upper, color="black", alpha=0.9, linestyle=":")
                 plt.plot(lower, color="black", alpha=0.9, linestyle=":")
-                plt.xticks(range(len(mean)), [self.arguments.eval_freq*i for i in range(len(mean))])
+                plt.xticks(range(len(mean)), [self.arguments.eval_freq * i for i in range(len(mean))])
                 plt.xlabel("Episodes")
 
                 plt.plot(mean, color="black")
@@ -72,4 +72,3 @@ class Plotter:
         self.agent.eval()
         for i in range(n):
             pass
-

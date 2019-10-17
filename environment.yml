@@ -1,8 +1,10 @@
-name: dl4nlp # todo: adapt
+name: replaymethods
 channels:
 - pytorch
 - defaults
 - conda-forge
+- akode
+- openai
 dependencies:
   - python=3.7.*
   - pytorch=1.2.0
@@ -13,5 +15,6 @@ dependencies:
   - h5py=2.10.*
   - pandas=0.25.*
   - tensorflow=1.14.*
-  - nltk=3.4.*
-#  TODO: add what you need!!
+  - gym=0.*
+  - box2d-py=2.*
+  - atari-py=0.*

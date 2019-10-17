@@ -84,7 +84,6 @@ class Trainer:
                 progress += [{**autodict(episode_durations, losses, episode, reward), **self._collect_metrics(None)}]
 
                 if (episode % self.arguments.eval_freq) == 0:
-
                     # write progress to pickle file (overwrite because there is no point keeping seperate versions)
                     DATA_MANAGER.save_python_obj(progress,
                                                  os.path.join(RESULTS_DIR, DATA_MANAGER.stamp, PROGRESS_DIR,
@@ -209,9 +208,6 @@ class Trainer:
 
             # increment parameters
             td_errors.append(error)
-            # mini_batch = np.array((s, action, r, s_next, done)).transpose()
-            # states = np.vstack(mini_batch[0])
-            # correlation.append(self.correlation_count(states))
 
             step += 1
             self._global_steps += 1
@@ -233,7 +229,6 @@ class Trainer:
         # metrics['Q_values'] = []
         # metrics['rewards'] = []
 
-
         return step, loss, summed_reward
 
     def _get_epsilon(self):
@@ -244,7 +239,6 @@ class Trainer:
 
     def _log(self, episode, progress_item):
 
-        # todo: elias
         log_string = ""
 
         for key, value in progress_item.items():
@@ -257,10 +251,10 @@ class Trainer:
 
         # convert to PyTorch and define types
         state = torch.tensor(state, dtype=torch.float).to(self._device)
-        action = torch.tensor(action, dtype=torch.int64).to(self._device) # Need 64 bit to use them as index
+        action = torch.tensor(action, dtype=torch.int64).to(self._device)  # Need 64 bit to use them as index
         next_state = torch.tensor(next_state, dtype=torch.float).to(self._device)
         reward = torch.tensor(reward, dtype=torch.float).to(self._device)
-        done = torch.tensor(done, dtype=torch.uint8).to(self._device) # Boolean
+        done = torch.tensor(done, dtype=torch.uint8).to(self._device)  # Boolean
 
         # compute the q value
         q_val = self._compute_q_val(state, action)
@@ -272,13 +266,13 @@ class Trainer:
         loss = self.loss(q_val, target)
         return loss
 
-    def correlation_count(state, threshold=0.8):
-        cov=np.cov(state)
+    def correlation_count(self, state, threshold=0.8):
+        cov = np.cov(state)
         corrcoeff = cov.copy()
         n_samples = cov.shape[0]
         for i in range(n_samples):
-            corrcoeff[i,:]=corrcoeff[i,:]/np.sqrt(cov[i,i])
+            corrcoeff[i, :] = corrcoeff[i, :] / np.sqrt(cov[i, i])
         for j in range(n_samples):
-            corrcoeff[:,j]=corrcoeff[:,j]/np.sqrt(cov[j,j])
+            corrcoeff[:, j] = corrcoeff[:, j] / np.sqrt(cov[j, j])
 
-        return (np.sum(np.abs(corrcoeff)>threshold) - n_samples) / 2
+        return (np.sum(np.abs(corrcoeff) > threshold) - n_samples) / 2

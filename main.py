@@ -14,7 +14,7 @@ from utils.system_utils import ensure_current_directory
 def main(arguments: argparse.Namespace):
     device = arguments.device
 
-    device = "cuda" if torch.cuda.is_available() else "cpu"
+    device = "cuda" if (torch.cuda.is_available() and device == "cuda") else "cpu"
 
     if arguments.random_seed:
         seed = np.random.randint(0, 1e6)
@@ -49,7 +49,8 @@ def main(arguments: argparse.Namespace):
 
         optimizer = find_right_model(OPTIMS, arguments.optimizer, params=agent.parameters(), lr=arguments.learning_rate)
 
-        stats = Trainer(environment, replay_memory, loss, agent, optimizer, device, arguments.patience, arguments).train()
+        stats = Trainer(environment, replay_memory, loss, agent, optimizer, device, arguments.patience,
+                        arguments).train()
 
         if arguments.plot:
             plotter = Plotter(environment, replay_memory, agent, device, stats, arguments)
@@ -62,16 +63,11 @@ def parse() -> argparse.Namespace:
 
     parser = argparse.ArgumentParser()
 
-
     # int
     parser.add_argument('--episodes', default=100, type=int, help='max number of episodes')
     parser.add_argument('--eval_freq', default=10, type=int, help='evaluate every x batches')
-    parser.add_argument('--saving_freq', default=1, type=int, help='save every x epochs')  # todo: implement
     parser.add_argument('--batch_size', default=64, type=int, help='size of batches')
     parser.add_argument('--hidden_dim', default=64, type=int, help='size of batches')
-
-    parser.add_argument('--max_training_minutes', default=24 * 60, type=int,
-                        help='max mins of training be4 save-and-kill')  # todo: implement
 
     # float
     parser.add_argument('--learning_rate', default=1e-3, type=float, help='learning rate')
@@ -79,11 +75,11 @@ def parse() -> argparse.Namespace:
     parser.add_argument('--replay_capacity', default=10000, type=int, help='max capacity of replay buffer')
 
     # string
-    # parser.add_argument('--environment', default="BipedalWalker-v2", type=str, help='classifier model name') # todo: dont do this one
+    # parser.add_argument('--environment', default="BipedalWalker-v2", type=str, help='classifier model name')
     # parser.add_argument('--environment', default="CartPole-v0", type=str, help='classifier model name')
     # parser.add_argument('--environment', default="LunarLander-v2", type=str, help='classifier model name')
     # parser.add_argument('--environment', default="MountainCar-v0", type=str, help='classifier model name')
-    parser.add_argument('--environment', default="FrozenLakeExtension", type=str, help='classifier model name') # todo: dont do this one
+    parser.add_argument('--environment', default="FrozenLakeExtension", type=str, help='classifier model name')
     # parser.add_argument('--environment', default="Breakout-ram-v0", type=str, help='classifier model name')
 
     parser.add_argument('--replay', default="PriorityReplay", type=str, help='generator model name')
@@ -94,7 +90,6 @@ def parse() -> argparse.Namespace:
     parser.add_argument('--run_name', default="", type=str, help='extra identification for run')
 
     # bool
-    parser.add_argument('--test-mode', action='store_true', help='start in train_mode')  # todo: implement
     parser.add_argument('--plot', default=False, type=str, help='plot when done')
 
     parser.add_argument("--device", type=str, default="cuda",
@@ -102,10 +97,6 @@ def parse() -> argparse.Namespace:
                              "If default none is used automatic check will be done")
     parser.add_argument("--seed", type=int, default=42, metavar="S", help="random seed (default: 42)")
     parser.add_argument("--random_seed", action="store_false")
-    parser.add_argument("--patience", type=int, default=30,
-                        help="how long will the model wait for improvement before stopping training")  # todo: implement
-
-    # todo: add whatever you like
 
     return parser.parse_args()
 
